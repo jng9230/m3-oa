@@ -3,6 +3,9 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { Button } from "@/components/ui/button"
+import { Routes, Route } from 'react-router-dom';
+import Login from './routes/Login';
+import Dashboard from './routes/Dashboard';
 
 function App() {
     const [count, setCount] = useState(0)
@@ -10,9 +13,10 @@ function App() {
     
     return (
         <>
-        <div className="flex min-h-svh flex-col items-center justify-center">
-            <Button onClick={() => setCount((count) => count + 1)}>Click me {count} </Button>
-        </div>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
         </>
     )
 }
