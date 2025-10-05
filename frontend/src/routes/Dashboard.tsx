@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { signOut } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
+import { updateCountRq } from "@/lib/api";
+import { db } from "../firebase";
+import { doc, onSnapshot } from 'firebase/firestore'; 
 
 interface DashboardProps {
     
@@ -27,12 +30,46 @@ const Dashboard: FunctionComponent<DashboardProps> = () => {
               console.log("user is logged out")
             }
           });
-
     }, [])
 
+    useEffect(() => {
+        // If no user is logged in, reset count and stop loading
+        if (!authedUser) {
+          setClickCount(0);
+          return;
+        }
+    
+        // Reference to the specific user's document in the 'users' collection
+        const userDocRef = doc(db, 'users', authedUser.uid);
+    
+        // Set up a real-time listener (onSnapshot)
+        onSnapshot(userDocRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                console.log("BACKEND DATA")
+                console.log(data);
+                setClickCount(parseInt(data.clickCount) || 0);
+                
+            // Document DNE (e.g., brand new user or first click hasn't happened yet)
+            } else {
+                console.log("User document not found in Firestore or has no clickCount.");
+                setClickCount(0);
+            }
+        }, (error) => {
+            console.error("Error fetching user click count from Firestore:", error);
+        });
+      }, [authedUser]);
+
     const handleClickCount = () => {
-        setClickCount(clickCount => clickCount + 1)
-    }
+        updateCountRq()
+            .then(d => {
+                // ----- let onSnapshot handle count
+                // if (d.status === 200){
+                //     setClickCount(parseInt(d.data))
+                // }
+            })
+            .catch(() => {}) // API already handles errs
+        }
 
     const handleLogout = () => {
         signOut(auth).then(() => {
@@ -44,7 +81,7 @@ const Dashboard: FunctionComponent<DashboardProps> = () => {
     }
 
     return ( <>
-        {authedUser && authedUser.uid}
+        {/* {authedUser && authedUser.uid} */}
         <div>
             <p>
                 Hello {authedUser?.email}!

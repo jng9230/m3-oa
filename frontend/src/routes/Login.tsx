@@ -17,7 +17,6 @@ interface LoginProps {
 }
 
 
-
 const Login: FunctionComponent<LoginProps> = () => {
     const navigate = useNavigate();
     
@@ -51,7 +50,6 @@ const Login: FunctionComponent<LoginProps> = () => {
                 const errorMessage = error.message;
                 console.error(errorCode, errorMessage);
             });
-
     }
     return (<>
         <div className="w-full max-w-md">

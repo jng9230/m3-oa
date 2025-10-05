@@ -8,9 +8,6 @@ import Login from './routes/Login';
 import Dashboard from './routes/Dashboard';
 
 function App() {
-    const [count, setCount] = useState(0)
-    const [user, setUser] = useState();
-    
     return (
         <>
         <Routes>
