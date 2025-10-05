@@ -1,13 +1,13 @@
 import { type FunctionComponent, useState } from "react";
 import {
     Field,
-    FieldDescription,
+    // FieldDescription,
     FieldGroup,
     FieldLabel,
     FieldSet,
   } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {  createUserWithEmailAndPassword, signInWithEmailAndPassword  } from 'firebase/auth';
 import { auth } from '../firebase';
 import { Button } from "@/components/ui/button";
@@ -42,7 +42,8 @@ const Login: FunctionComponent<LoginProps> = () => {
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 // Signed in 
-                const user = userCredential.user;
+                // const user = userCredential.user;
+                console.log(userCredential);
                 navigate("/dashboard")
             })
             .catch((error) => {
@@ -52,7 +53,7 @@ const Login: FunctionComponent<LoginProps> = () => {
             });
     }
     return (<>
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md mx-auto">
             <FieldSet>
                 <FieldGroup>
                 <Field>

@@ -1,6 +1,6 @@
 import { auth } from '../firebase';
 
-const API = import.meta.env.VITE_API_BASE;
+const API = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
 
 
 export const updateCountRq = async () => {

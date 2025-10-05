@@ -6,6 +6,12 @@ import admin from 'firebase-admin';
 import { Firestore } from 'firebase-admin/firestore';
 import { Auth } from 'firebase-admin/auth';
 
+console.log('SERVER INIT: Starting Firebase Admin SDK initialization...');
+console.log('SERVER INIT: NODE_ENV is:', process.env.NODE_ENV);
+console.log('SERVER INIT: FB_SVC_ACCOUNT_PATH (if set):', process.env.FB_SVC_ACCOUNT_PATH);
+console.log('SERVER INIT: FRONTEND_ORIGIN (from process.env):', process.env.FRONTEND_ORIGIN);
+
+
 if (!admin.apps.length) {
     // local env -> use service key
     if (process.env.NODE_ENV === 'development' && process.env.FB_SVC_ACCOUNT_PATH) {
@@ -13,10 +19,12 @@ if (!admin.apps.length) {
         admin.initializeApp({
             credential: admin.credential.cert(serviceAccount)
         });
+        console.log('SERVER INIT: Firebase Admin SDK initialized with service account key (local development).');
 
     // use default creds for cloud env
     } else {
         admin.initializeApp();
+        console.log('SERVER INIT: Firebase Admin SDK initialized with default credentials (Cloud Run/production).')
     }
 }
 export const db = admin.firestore();
@@ -50,8 +58,9 @@ async function verifyFirebaseToken(req: Request, res: Response, next: any) {
 
 
 const app = express();
-const port = process.env.PORT;
-app.use(cors({ origin: 'http://localhost:5173' }));
+const port = process.env.PORT || 3000;
+const cors_origin = process.env.FRONTEND_ORIGIN || 'http://localhost:5173'
+app.use(cors({ origin: cors_origin}));
 
 
 
@@ -63,7 +72,7 @@ app.post('/api/increment-count', verifyFirebaseToken, async (req: Request, res: 
         const userRef = db.collection('users').doc(userId);
         await userRef.set({
             clickCount: admin.firestore.FieldValue.increment(1)
-        }, { merge: true });
+        }, { merge: true }); // make a new field if DNE; keep other fields if exists
 
         return res.status(200).json({ message: 'Click count incremented', userId: userId });
     } catch (error) {
@@ -79,5 +88,5 @@ app.get('/', (req: Request, res: Response) => {
 
 
 app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+    console.log(`[LISTEN] Server running on port ${port}. Allowed CORS origin: ${cors_origin}`);
 });

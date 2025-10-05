@@ -46,8 +46,8 @@ const Dashboard: FunctionComponent<DashboardProps> = () => {
         onSnapshot(userDocRef, (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                console.log("BACKEND DATA")
-                console.log(data);
+                // console.log("BACKEND DATA")
+                // console.log(data);
                 setClickCount(parseInt(data.clickCount) || 0);
                 
             // Document DNE (e.g., brand new user or first click hasn't happened yet)
@@ -63,6 +63,7 @@ const Dashboard: FunctionComponent<DashboardProps> = () => {
     const handleClickCount = () => {
         updateCountRq()
             .then(d => {
+                console.log(d);
                 // ----- let onSnapshot handle count
                 // if (d.status === 200){
                 //     setClickCount(parseInt(d.data))
